@@ -258,7 +258,7 @@ class TestyCreator:
             else:
                 section_data['parent'] = TestSuite.objects.get(pk=suite_mappings.get(section['suite_id']))
             sections_mappings[section['id']] = MigratorService.suite_create(section_data).id
-        TestSuite.objects.rebuild()
+        TestSuite._tree_manager.rebuild()
         return sections_mappings
 
     @staticmethod
