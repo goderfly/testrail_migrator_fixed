@@ -35,7 +35,7 @@ class TatlinAllureUploaderConfig(TestyPluginConfig):
     package_name = 'testrail_migrator'
     verbose_name = 'TestRail migrator'
     description = 'Migrate your data from testrail to testy'
-    version = '0.1.5'
+    version = '0.1.6'
     plugin_base_url = 'migrator'
     index_reverse_name = 'migrator-index'
     urls_module = 'testrail_migrator.urls'
