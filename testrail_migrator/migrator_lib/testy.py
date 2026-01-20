@@ -45,6 +45,7 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.utils import timezone
+from mptt.utils import rebuild
 from testy.core.models import Attachment, Project
 from testy.tests_description.models import TestCase, TestCaseStep, TestSuite
 from testy.tests_representation.models import (Parameter, Test, TestPlan,
@@ -258,7 +259,7 @@ class TestyCreator:
             else:
                 section_data['parent'] = TestSuite.objects.get(pk=suite_mappings.get(section['suite_id']))
             sections_mappings[section['id']] = MigratorService.suite_create(section_data).id
-        TestSuite._tree_manager.rebuild()
+        rebuild(TestSuite)
         return sections_mappings
 
     @staticmethod
