@@ -38,8 +38,7 @@ setup(
         'tqdm==4.64.1',
         'aiohttp==3.8.3',
         'aiofiles==22.1.0',
-        'factory-boy==3.2.1',
-        'django-mptt>=0.14.0,<0.16.0'
+        'factory-boy==3.2.1'
     ],
     packages=find_packages(),
     include_package_data=True,
