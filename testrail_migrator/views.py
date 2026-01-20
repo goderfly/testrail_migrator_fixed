@@ -42,8 +42,17 @@ from .models import TestrailBackup, TestrailSettings
 from .tasks import (download_milestone_task, download_plans_runs_task,
                     download_suites_task, download_task,
                     upload_plans_runs_task, upload_suites_task, upload_task)
+from . import TatlinAllureUploaderConfig
 
 UserModel = get_user_model()
+
+
+class VersionContextMixin:
+    """Mixin to add migrator version to context."""
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['migrator_version'] = TatlinAllureUploaderConfig.version
+        return context
 
 
 def task_status(request, task_id):

@@ -84,7 +84,9 @@ class MigratorService:
             test_suite.level = 0
             suites.append(test_suite)
         result = TestSuite.objects.bulk_create(suites)
-        TestSuite._tree_manager.rebuild()
+        # Rebuild tree structure after bulk create
+        from mptt.managers import TreeManager
+        TreeManager.rebuild(TestSuite.objects)
         return result
 
     def step_create(self, data: Dict[str, Any]) -> TestCaseStep:
@@ -150,7 +152,9 @@ class MigratorService:
                     parameters=[Parameter.objects.get(pk=parameter) for parameter in parameters]
                 )
             )
-        TestPlan._tree_manager.rebuild()
+        # Rebuild tree structure after bulk create
+        from mptt.managers import TreeManager
+        TreeManager.rebuild(TestPlan.objects)
         created_tests = []
         for test_plan, data in zip(test_plans, data_list):
             if data.get('test_cases'):
@@ -190,7 +194,9 @@ class MigratorService:
         test_plans = []
         for data in validated_data:
             test_plans.append(self.make_testplan_model(data))
-        TestPlan._tree_manager.rebuild()
+        # Rebuild tree structure after bulk create
+        from mptt.managers import TreeManager
+        TreeManager.rebuild(TestPlan.objects)
 
         return test_plans
 
