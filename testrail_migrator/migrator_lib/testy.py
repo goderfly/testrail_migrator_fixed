@@ -259,8 +259,8 @@ class TestyCreator:
                 section_data['parent'] = TestSuite.objects.get(pk=suite_mappings.get(section['suite_id']))
             sections_mappings[section['id']] = MigratorService.suite_create(section_data).id
         # Rebuild tree structure
-        from mptt.managers import TreeManager
-        TreeManager.rebuild(TestSuite.objects)
+        from testrail_migrator.migrator_lib.migrator_service import rebuild_mptt_tree
+        rebuild_mptt_tree(TestSuite)
         return sections_mappings
 
     @staticmethod

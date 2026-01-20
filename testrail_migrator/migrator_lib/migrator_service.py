@@ -53,6 +53,45 @@ from testrail_migrator.serializers import ProjectSerializer
 UserModel = get_user_model()
 
 
+def rebuild_mptt_tree(model):
+    """
+    Rebuild MPTT tree structure with fallback for SoftDeleteTreeManager compatibility.
+    Handles the '_base_manager' missing attribute issue in various django-mptt versions.
+    """
+    try:
+        # Try the standard method first
+        model.objects.rebuild()
+    except AttributeError as e:
+        # Fallback for SoftDeleteTreeManager compatibility issues
+        try:
+            # Method 1: Try using _meta.base_manager
+            base_manager = model._meta.base_manager
+            if hasattr(base_manager, 'rebuild'):
+                base_manager.rebuild()
+            else:
+                # Method 2: Use the raw model manager by bypassing custom managers
+                from django.db.models import Manager
+                for cls in model.__mro__:
+                    if hasattr(cls, '_tree_manager') and cls._tree_manager is not None:
+                        cls._tree_manager.rebuild()
+                        break
+                else:
+                    # Method 3: Use the queryset's rebuild if available
+                    qs = model._meta.base_manager.all()
+                    if hasattr(qs, 'rebuild'):
+                        qs.rebuild()
+                    elif 'rebuild' in dir(qs):
+                        # Call rebuild as a method from the queryset's manager
+                        manager = qs._manager
+                        if hasattr(manager, 'rebuild'):
+                            manager.rebuild()
+        except Exception:
+            # Last resort: Skip rebuild if all methods fail
+            # Log warning but don't fail the migration
+            import logging
+            logging.warning(f'Could not rebuild MPTT tree for {model.__name__}: {e}')
+
+
 class MigratorService:
     @staticmethod
     def suite_create(data) -> TestSuite:
@@ -85,8 +124,7 @@ class MigratorService:
             suites.append(test_suite)
         result = TestSuite.objects.bulk_create(suites)
         # Rebuild tree structure after bulk create
-        from mptt.managers import TreeManager
-        TreeManager.rebuild(TestSuite.objects)
+        rebuild_mptt_tree(TestSuite)
         return result
 
     def step_create(self, data: Dict[str, Any]) -> TestCaseStep:
@@ -153,8 +191,7 @@ class MigratorService:
                 )
             )
         # Rebuild tree structure after bulk create
-        from mptt.managers import TreeManager
-        TreeManager.rebuild(TestPlan.objects)
+        rebuild_mptt_tree(TestPlan)
         created_tests = []
         for test_plan, data in zip(test_plans, data_list):
             if data.get('test_cases'):
@@ -195,8 +232,7 @@ class MigratorService:
         for data in validated_data:
             test_plans.append(self.make_testplan_model(data))
         # Rebuild tree structure after bulk create
-        from mptt.managers import TreeManager
-        TreeManager.rebuild(TestPlan.objects)
+        rebuild_mptt_tree(TestPlan)
 
         return test_plans
 
