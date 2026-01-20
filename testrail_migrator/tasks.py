@@ -110,7 +110,8 @@ def upload_task(self, backup_name, config_dict, upload_root_runs: bool, service_
                 project_id=project.id,
                 upload_root_runs=upload_root_runs,
                 parent_type=ParentType.PLAN,
-                user_mappings=mappings['users']
+                user_mappings=mappings['users'],
+                service_user=creator.service_user
             )
 
         with progress_recorder.progress_context('Creating results with plan as parent'):
@@ -132,7 +133,8 @@ def upload_task(self, backup_name, config_dict, upload_root_runs: bool, service_
                 project_id=project.id,
                 upload_root_runs=upload_root_runs,
                 parent_type=ParentType.MILESTONE,
-                user_mappings=mappings['users']
+                user_mappings=mappings['users'],
+                service_user=creator.service_user
             )
 
         with progress_recorder.progress_context('Creating runs with mile as parent'):
@@ -602,7 +604,8 @@ def upload_plans_runs_task(self, backup_name, config_dict, service_user_login='a
                 project_id=project.id,
                 upload_root_runs=True,
                 parent_type=ParentType.PLAN,
-                user_mappings=mappings['users']
+                user_mappings=mappings['users'],
+                service_user=creator.service_user
             )
 
         with progress_recorder.progress_context('Creating results with plan as parent'):
@@ -625,6 +628,7 @@ def upload_plans_runs_task(self, backup_name, config_dict, service_user_login='a
                 upload_root_runs=True,
                 parent_type=ParentType.FORCE_PARENT,
                 user_mappings=mappings['users'],
+                service_user=creator.service_user,
                 force_parent_id=testy_plan_id
             )
 

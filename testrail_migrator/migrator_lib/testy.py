@@ -383,7 +383,7 @@ class TestyCreator:
 
     @staticmethod
     def create_runs(runs, mapping, config_mappings, tests, case_mappings, project_id,
-                    parent_type: ParentType, upload_root_runs: bool, user_mappings, force_parent_id: int = None):
+                    parent_type: ParentType, upload_root_runs: bool, user_mappings, service_user, force_parent_id: int = None):
         run_data_list = []
         src_tests = []
         src_run_ids = []
@@ -431,7 +431,7 @@ class TestyCreator:
         for src_test, created_test in zip(src_tests, created_tests):
             if src_test['assignedto_id']:
                 user_id = user_mappings.get(src_test['assignedto_id'])
-                TestService().test_update(created_test, {'assignee': UserModel.objects.get(pk=user_id)}, self.service_user)
+                TestService().test_update(created_test, {'assignee': UserModel.objects.get(pk=user_id)}, service_user)
 
         return dict(zip(
             [src_test['id'] for src_test in src_tests],
