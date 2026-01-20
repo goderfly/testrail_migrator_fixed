@@ -194,14 +194,14 @@ class MigratorService:
         return test_plans
 
     @staticmethod
-    def create_project(project) -> Project:
+    def create_project(project, user) -> Project:
         data = {
             'name': project['name'],
             'description': project['announcement'] if project['announcement'] else ''
         }
         serializer = ProjectSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        return ProjectService().project_create(serializer.validated_data)
+        return ProjectService().project_create(serializer.validated_data, user)
 
     @staticmethod
     def tests_bulk_create_by_data_list(data_list):

@@ -79,7 +79,7 @@ def upload_task(self, backup_name, config_dict, upload_root_runs: bool, service_
             project = Project.objects.get(pk=testy_project_id)
         else:
             with progress_recorder.progress_context('Creating projects'):
-                project = MigratorService.create_project(backup['project'])
+                project = MigratorService.create_project(backup['project'], creator.service_user)
 
         with progress_recorder.progress_context('Creating users'):
             mappings['users'] = creator.create_users(backup['users'])
