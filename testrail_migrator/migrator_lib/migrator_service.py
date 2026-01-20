@@ -34,7 +34,6 @@ from typing import Any, Dict
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
-from mptt.utils import rebuild
 from testy.core.models import Project
 from testy.core.services.attachments import AttachmentService
 from testy.core.services.projects import ProjectService
@@ -85,7 +84,7 @@ class MigratorService:
             test_suite.level = 0
             suites.append(test_suite)
         result = TestSuite.objects.bulk_create(suites)
-        rebuild(TestSuite)
+        TestSuite.objects.rebuild()
         return result
 
     def step_create(self, data: Dict[str, Any]) -> TestCaseStep:
@@ -151,7 +150,7 @@ class MigratorService:
                     parameters=[Parameter.objects.get(pk=parameter) for parameter in parameters]
                 )
             )
-        rebuild(TestPlan)
+        TestPlan.objects.rebuild()
         created_tests = []
         for test_plan, data in zip(test_plans, data_list):
             if data.get('test_cases'):
@@ -191,7 +190,7 @@ class MigratorService:
         test_plans = []
         for data in validated_data:
             test_plans.append(self.make_testplan_model(data))
-        rebuild(TestPlan)
+        TestPlan.objects.rebuild()
 
         return test_plans
 
