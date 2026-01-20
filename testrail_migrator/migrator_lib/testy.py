@@ -431,7 +431,7 @@ class TestyCreator:
         for src_test, created_test in zip(src_tests, created_tests):
             if src_test['assignedto_id']:
                 user_id = user_mappings.get(src_test['assignedto_id'])
-                TestService().test_update(created_test, {'assignee': UserModel.objects.get(pk=user_id)})
+                TestService().test_update(created_test, {'assignee': UserModel.objects.get(pk=user_id)}, self.service_user)
 
         return dict(zip(
             [src_test['id'] for src_test in src_tests],
